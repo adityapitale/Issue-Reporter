@@ -5,32 +5,32 @@ import { Login } from "./pages/Login";
 import { UserDashboard } from "./pages/UserDashboard";
 import { AuthorityDashboard } from "./pages/AuthorityDashboard";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { CommunityFeed } from "./pages/CommunityFeed";
 
-const DashboardRouter = () => {
-  const { role, user } = useAuth();
-
-  if (!user) return <Navigate to="/login" replace />;
-
-  if (role === "authority") {
-    return <AuthorityDashboard />;
-  }
-  return <UserDashboard />;
-};
-
-function App() {
+const App = () => {
   return (
     <AuthProvider>
       <Router>
         <Routes>
-          <Route path="/login" element={<Login />} />
-
-          <Route element={<Layout />}>
-            <Route path="/" element={<DashboardRouter />} />
+          <Route path="/" element={<Layout />}>
+            <Route index element={
+              <ProtectedRoute>
+                <DashboardHome />
+              </ProtectedRoute>
+            } />
+            <Route path="login" element={<Login />} />
+            <Route path="feed" element={<CommunityFeed />} />
           </Route>
         </Routes>
       </Router>
     </AuthProvider>
   );
-}
+};
+
+const DashboardHome = () => {
+  const { role } = useAuth();
+  return role === 'authority' ? <AuthorityDashboard /> : <UserDashboard />;
+};
+
 
 export default App;

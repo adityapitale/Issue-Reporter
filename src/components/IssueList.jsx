@@ -50,20 +50,32 @@ export const IssueList = ({ issues, onStatusUpdate, isAuthority }) => {
                             )}
                         </div>
 
+                        {/* Support Count Display */}
+                        <div className="flex items-center space-x-2 mb-4 bg-slate-50 p-2 rounded-lg border border-slate-100/50">
+                            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Community Support:</span>
+                            <div className="flex items-center space-x-1 text-blue-600">
+                                <span className="font-bold text-lg">{(issue.upvotes || []).length}</span>
+                                <span className="text-xs font-medium">votes</span>
+                            </div>
+                        </div>
+
                         {isAuthority && (
-                            <div className="mt-5 grid grid-cols-2 gap-3">
-                                <button
-                                    onClick={() => onStatusUpdate(issue.id, "in progress")}
-                                    className="text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 py-2.5 px-3 rounded-xl font-bold transition-colors border border-blue-100"
-                                >
-                                    Start Work
-                                </button>
-                                <button
-                                    onClick={() => onStatusUpdate(issue.id, "resolved")}
-                                    className="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-700 py-2.5 px-3 rounded-xl font-bold transition-colors border border-emerald-100"
-                                >
-                                    Resolve
-                                </button>
+                            <div className="mt-5">
+                                <label className="block text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Update Status</label>
+                                <div className="relative">
+                                    <select
+                                        value={issue.status?.toLowerCase() || 'pending'}
+                                        onChange={(e) => onStatusUpdate(issue.id, e.target.value)}
+                                        className="w-full appearance-none bg-white border border-slate-200 text-slate-700 py-3 px-4 pr-8 rounded-xl font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all cursor-pointer shadow-sm hover:border-blue-300"
+                                    >
+                                        <option value="pending">Pending Review</option>
+                                        <option value="in progress">In Progress</option>
+                                        <option value="resolved">Resolved</option>
+                                    </select>
+                                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-500">
+                                        <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+                                    </div>
+                                </div>
                             </div>
                         )}
                     </div>

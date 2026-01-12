@@ -10,18 +10,24 @@ export const AuthorityDashboard = () => {
     const fetchIssues = async () => {
         setLoading(true);
         try {
-            const q = query(collection(db, "issues"), orderBy("timestamp", "desc"));
-            const querySnapshot = await getDocs(q);
-            const issuesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            setIssues(issuesData);
-        } catch (error) {
-            console.error("Error fetching issues:", error);
-            // Fallback
+            // For complex sorting (upvotes length), client-side sorting is often easier/cheaper for small datasets
+            // as Firestore doesn't support sorting by array length directly.
             const q = query(collection(db, "issues"));
             const querySnapshot = await getDocs(q);
             const issuesData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            issuesData.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+
+            // Client-side Sort: Priority (Upvotes) -> Recency
+            issuesData.sort((a, b) => {
+                const upvotesA = (a.upvotes || []).length;
+                const upvotesB = (b.upvotes || []).length;
+                if (upvotesB !== upvotesA) return upvotesB - upvotesA;
+
+                return (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0);
+            });
+
             setIssues(issuesData);
+        } catch (error) {
+            console.error("Error fetching issues:", error);
         } finally {
             setLoading(false);
         }
